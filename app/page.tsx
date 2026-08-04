@@ -192,13 +192,81 @@ export default function Home() {
             }}
           >💧 干透天数：{plant.dryDays}天</p>
 
-          <p
+          <div
             style={{
-              fontSize:"15px",
-              color:"#555",
               margin: "6px 0",
             }}
-          >🌡️ 当前湿度：{plant.moisture}</p>
+          >
+            <span
+              style={{
+                color:
+                  plant.moisture === "蓝区"
+                    ? "#6F95BB"
+                    : plant.moisture === "绿区"
+                    ? "#6E9E73"
+                    : "#BE7A7A",
+              }}
+            >
+              🌡️ 当前湿度：{plant.moisture}
+            </span>
+                
+
+            <div
+              style={{
+              display: "flex",
+              gap: "12px",
+              marginTop: "6px",
+              }}
+            >
+              {["蓝区", "绿区", "红区"].map((zone) => (
+                <button
+                  key={zone}
+                  onClick={() => {
+                    const updatedPlants = plantList.map((p) =>
+                      p.id === plant.id
+                        ? {
+                            ...p,
+                            moisture: zone,
+                          }
+                        : p
+                    );
+
+                    setPlantList(updatedPlants);
+                  }}
+                  style={{
+                    padding: "8px 18px",
+                    borderRadius: "999px",
+                    border: "none",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                    fontWeight: "600",
+
+                    backgroundColor:
+                      zone === "蓝区"
+                        ? (
+                            plant.moisture === zone
+                              ? "#7DA3C9"
+                              : "#EEF5FB"
+                          )
+                        : zone === "绿区"
+                        ? (
+                            plant.moisture === zone
+                              ? "#7EAF83"
+                              : "#EEF6EF"
+                          )
+                        : (
+                            plant.moisture === zone
+                              ? "#C98A8A"
+                              : "#FAEEEE"
+                          ),
+                  }}
+                  >
+                  {zone}
+                </button>
+              ))}
+            </div>
+          </div>
+
 
           <p
             style={{
@@ -249,9 +317,7 @@ export default function Home() {
 
           <button
               style={{
-                backgroundColor: plant.lastWaterDate
-                  ? "#9ca3af"
-                  : "#22c55e",
+                backgroundColor: "#7EAF83",
                 color: "white",
                 border: "none",
                 padding: "8px 12px",
@@ -262,24 +328,86 @@ export default function Home() {
 
               onClick={() => {
 
-                const today =new Date().toISOString().split("T")[0];
-
-                const updatedPlants = plantList.map((p) =>
-                  p.id === plant.id
-                    ? {
-                      ...p,
-                      lastWaterDate: today,
-                      }
-                    : p
+                const daysLeft = getDaysLeft(
+                  plant.lastWaterDate,
+                  plant.dryDays
                 );
 
-              setPlantList(updatedPlants);
-            }}
+                if (
+                  typeof daysLeft === "number" &&
+                  daysLeft > 0
+                ) {
+                  const confirmWater =
+                    window.confirm(
+                      `距离建议浇水还有 ${daysLeft} 天，确认已经浇水？`
+                    );
+
+                  if (!confirmWater) {
+                    return;
+                  }
+                }
+
+                const today =
+                  new Date()
+                    .toISOString()
+                    .split("T")[0];
+
+                const updatedPlants =
+                  plantList.map((p) =>
+                    p.id === plant.id
+                      ? {
+                          ...p,
+
+                          previousWaterDate:
+                            p.lastWaterDate,
+
+                          lastWaterDate: today,
+                        }
+                      : p
+                  );
+
+                setPlantList(updatedPlants);
+              }}
           >
-            {plant.lastWaterDate
-              ? "✅ 已记录"
-              : "✅ 今天已浇水"}
+            💧 记录今天浇水
           </button>
+
+          {
+            plant.lastWaterDate && (
+              <button
+                onClick={() => {
+
+                  const updatedPlants =
+                    plantList.map((p) =>
+                      p.id === plant.id
+                        ? {
+                            ...p,
+
+                            lastWaterDate:
+                              p.previousWaterDate,
+
+                            previousWaterDate: null,
+                          }
+                        : p
+                    );
+
+                  setPlantList(updatedPlants);
+                }}
+                style={{
+                  marginLeft: "10px",
+                  backgroundColor: "#C98A8A",
+                  color: "white",
+                  border: "none",
+                  padding: "8px 16px",
+                  borderRadius: "999px",
+                  cursor: "pointer",
+                  fontWeight: 600,
+                }}
+              >
+                ↩️ 撤销
+              </button>
+            )
+          }
 
         </div>
       ))}
