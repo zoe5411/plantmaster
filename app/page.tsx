@@ -120,7 +120,7 @@ export default function Home() {
           fontSize:"28px",
           marginBottom: "30px",
         }}
-      >🌱 Plant Master🌱</h1>
+      >🌱 Plant Master</h1>
 
       <div
         style={{
