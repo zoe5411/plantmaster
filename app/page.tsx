@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { plants } from "../data/plants";
+import { plants, Plant } from "../data/plants";
 
 function getNextWaterDate(
   lastWaterDate: string | null,
@@ -57,7 +57,7 @@ function isDuePlant(
 
 export default function Home() {
 
-  const [plantList, setPlantList] = useState(plants);
+  const [plantList, setPlantList] = useState<Plant[]>(plants);
 
   useEffect(() => {
     const savedPlants =

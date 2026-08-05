@@ -1,4 +1,15 @@
-export const plants = [
+export interface Plant {
+  id: string;
+  name: string;
+  location: string;
+  moisture: string;
+  dryDays: number;
+  lastWaterDate: string | null;
+  previousWaterDate: string | null;
+  notes: string;
+}
+
+export const plants: Plant[] = [
   {
     id: "P001",
     name: "龟背竹skullpanda",
